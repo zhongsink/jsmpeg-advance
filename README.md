@@ -42,7 +42,7 @@ git clone git@github.com:zhongsink/jsmpeg-advance.git
 ## 搭建：
 ```
 cd jsmepeg
-node stream-server.js supersecret
+node websocket-relay.js supersecret
 ```
 
  ```
@@ -52,18 +52,19 @@ sudo ./ffmpeg -f v4l2 -framerate 25 -video_size 640x480 -i /dev/video0 -f mpegts
  ```
  -s 设定分辨率大小， -f 指定格式， -i 指定接口， -b 指定视频流比特率， -r 指定帧率，后面的 url 填上在 websocket-relay.js 设置好的格式。
 
-由于 jsmepeg 中没有写静态服务
+由于 jsmpeg 中没有写静态服务
 
 - 直接使用 静态服务器。 http-server 
 
 npm install -g http-server
-http-server ./jsmepeg
+http-server ./jsmpeg
 
 接下来就可以直接访问 http://localhost:8080 获取实时的视频了,同局域网也可访问
  
+### 自定制
 
-对此 我添加了对实时视频的一点简单处理， 可以获取到视频的截图,简单实现motion
-修改 index.html
+我添加了对实时视频的一点简单处理， 可以获取到视频的截图,简单实现motion
+详见 index.html
 
 
 
