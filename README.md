@@ -7,7 +7,7 @@
 
 - 树莓派 raspberry / 摄像头
 - ffmpeg
-- nodejs 嵌入式平台使用nodejs 兼容性比我想象的好的多
+- nodejs
 
 
 ## 使用
@@ -35,7 +35,7 @@ make && make install
 ```
 ### 安装 jsmpeg-advance
 ```
-git clone https://github.com/zhongsink/jsmpeg-advance
+git clone git@github.com:zhongsink/jsmpeg-advance.git
 ```
 安装依赖 npm install -g ws
 
@@ -53,8 +53,6 @@ sudo ./ffmpeg -f v4l2 -framerate 25 -video_size 640x480 -i /dev/video0 -f mpegts
  -s 设定分辨率大小， -f 指定格式， -i 指定接口， -b 指定视频流比特率， -r 指定帧率，后面的 url 填上在 websocket-relay.js 设置好的格式。
 
 由于 jsmepeg 中没有写静态服务
-
-```
 
 - 直接使用 静态服务器。 http-server 
 
