@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>实时监控</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+	<style type="text/css">
+		html, body {
+			background-color: #686868;
+			text-align: center;
+		}
+		@media screen and (min-width: 600px) {
+			canvas{
+				width:600px;
+				height: 480px;
+			}
+		}
+		@media screen and (max-width: 600px) {
+    		canvas{
+				width:320px;
+				height: 240px;
+			}
+		}
+	</style>
+	
+</head>
+<body>
+	<canvas id="video-canvas"></canvas>
+	<div>
+		 开启报警：<input id="checkboxID" type="checkbox" />
+		 <button onclick="saveAsLocalImage()">截图</button>
+	</div>
+	<script type="text/javascript" src="jsmpeg.min.js"></script>
+	<script type="text/javascript">
+		var canvas = document.getElementById('video-canvas');
+		var url = 'ws://'+document.location.hostname+':8082/';
+		var player = new JSMpeg.Player(url, { canvas: canvas, preserveDrawingBuffer : true, disableGl: true});
+		
+		function saveAsLocalImage () {  
+                // here is the most important part because if you dont replace you will get a DOM 18 exception.  
+				var image = canvas.toDataURL("image/png").replace("image/png", "image/octet-stream");  
+				//console.log(image);
+				var saveFile = function(data, filename){
+    					var save_link = document.createElement('a');
+    					save_link.href = data;
+    					save_link.download = filename;
+   
+    					var event = document.createEvent('MouseEvents');
+    					event.initMouseEvent('click', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+    					save_link.dispatchEvent(event);
+					};
+   
+					// 下载后的文件名
+					var filename = 'download' + (new Date()).getTime() + '.png';
+					saveFile(image,filename); 
+                
+
+            }  
+
+			function getHistogram(imageData) {
+    			var arr = [];
+    			for (var i = 0; i < 64; i++) {
+        			arr[i] = 0;
+    			}
+    			var data = imageData.data;
+    			console.log(data);
+    			var pow4 = Math.pow(4, 2);
+    			for (var i = 0, len = data.length; i < len; i += 4) {
+        			var red = (data[i] / 64) | 0;
+        			var green = (data[i + 1] / 64) | 0;
+        			var blue = (data[i + 2] / 64) | 0;
+        			var index = red * pow4 + green * 4 + blue;
+        			arr[index]++;
+    			}
+    			return arr;
+			}
+
+			function cosine(arr1, arr2) {
+    			var axb = 0,
+        		a = 0,
+        		b = 0;
+    			for (var i = 0, len = arr1.length; i < len; i++) {
+        			axb += arr1[i] * arr2[i];
+        			a += arr1[i] * arr1[i];
+        			b += arr2[i] * arr2[i];
+    			}
+
+    			return axb / (Math.sqrt(a) * Math.sqrt(b));
+			}
+			
+			(function(){
+
+				var ctx=canvas.getContext("2d");
+				var imgdataFlag= getHistogram(ctx.getImageData(0,0,canvas.width,canvas.height)) ,
+					imgdataCurrent=null;
+				
+				var timer=setInterval(function(){
+
+					imgdataCurrent= getHistogram(ctx.getImageData(0,0,canvas.width,canvas.height));
+					console.log(cosine(imgdataFlag,imgdataCurrent));
+					if(cosine(imgdataFlag,imgdataCurrent) > 0.99 && document.getElementById("checkboxID").checked){
+						
+						if(confirm("你家小宠物可能gg啦,查看详图")){
+							document.getElementById("checkboxID").checked=false;
+							saveAsLocalImage();	
+						}
+
+					}
+					
+					imgdataFlag=imgdataCurrent;
+					
+				},10000)	
+			})()
+
+	</script>
+</body>
+</html>
