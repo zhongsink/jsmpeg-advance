@@ -45,7 +45,7 @@ cd jsmepeg
 node websocket-relay.js supersecret
 ```
 
- ```
+```
 cd /usr/local/ffmpeg/bin
 
 sudo ./ffmpeg -f v4l2 -framerate 25 -video_size 640x480 -i /dev/video0 -f mpegts -codec:v mpeg1video -s 640x480 -b:v 1000k -bf 0 -codec:a mp2 -b:a 128k -muxdelay 0.001 http://localhost:8081/supersecret
